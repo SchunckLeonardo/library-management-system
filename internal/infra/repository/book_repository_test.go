@@ -1,20 +1,23 @@
 package repository_test
 
 import (
+	"database/sql"
 	"github.com/SchunckLeonardo/library-management-system/internal/domain/entity"
-	"github.com/SchunckLeonardo/library-management-system/internal/infra/model"
 	"github.com/SchunckLeonardo/library-management-system/internal/infra/repository"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 	"testing"
 )
 
-var db *gorm.DB
+var db *sql.DB
 
 func SetUp() {
-	db, _ = gorm.Open(sqlite.Open("file::memory:?cache=shared"),
-		&gorm.Config{})
+	db, _ = sql.Open("sqlite3", ":memory:")
+	CreateBookTable(db)
+}
+
+func CreateBookTable(db *sql.DB) {
+	db.Exec(`CREATE TABLE books(id string, title string, author string, description string, available boolean, expired_borrow_date string);`)
 }
 
 func TestBookRepository(t *testing.T) {
@@ -25,8 +28,8 @@ func TestBookRepository(t *testing.T) {
 	err := bookRepository.Create(book)
 	assert.Nil(t, err)
 
-	var bookFounded entity.BookInterface
-	err = db.Model(model.Book{}).First(&bookFounded, book.GetID()).Error
+	id := book.GetID().String()
+	bookFounded, err := bookRepository.GetById(id)
 	assert.Nil(t, err)
 
 	assert.Equal(t, book.GetID(), bookFounded.GetID())

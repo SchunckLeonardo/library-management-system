@@ -7,12 +7,12 @@ import (
 )
 
 type Book struct {
-	id                value_objects.ID
-	title             string
-	author            string
-	description       string
-	available         bool
-	expiredBorrowDate time.Time
+	ID                value_objects.ID
+	Title             string
+	Author            string
+	Description       string
+	Available         bool
+	ExpiredBorrowDate time.Time
 }
 
 type BookInterface interface {
@@ -32,37 +32,37 @@ type BookInterface interface {
 func NewBook(title, author, description string) *Book {
 	id := value_objects.NewID()
 	return &Book{
-		id:                *id,
-		title:             title,
-		author:            author,
-		description:       description,
-		available:         true,
-		expiredBorrowDate: time.Now(),
+		ID:                *id,
+		Title:             title,
+		Author:            author,
+		Description:       description,
+		Available:         true,
+		ExpiredBorrowDate: time.Now(),
 	}
 }
 
 func (b *Book) GetID() value_objects.ID {
-	return b.id
+	return b.ID
 }
 
 func (b *Book) GetTitle() string {
-	return b.title
+	return b.Title
 }
 
 func (b *Book) GetAuthor() string {
-	return b.author
+	return b.Author
 }
 
 func (b *Book) GetDescription() string {
-	return b.description
+	return b.Description
 }
 
 func (b *Book) GetExpiredBorrowDate() time.Time {
-	return b.expiredBorrowDate
+	return b.ExpiredBorrowDate
 }
 
 func (b *Book) IsAvailable() bool {
-	return b.available
+	return b.Available
 }
 
 func (b *Book) ChangeTitle(newTitle string) error {
@@ -70,7 +70,7 @@ func (b *Book) ChangeTitle(newTitle string) error {
 		return errors.ErrStringIsEmpty("title")
 	}
 
-	b.title = newTitle
+	b.Title = newTitle
 	return nil
 }
 
@@ -79,7 +79,7 @@ func (b *Book) ChangeAuthor(newAuthor string) error {
 		return errors.ErrStringIsEmpty("author")
 	}
 
-	b.author = newAuthor
+	b.Author = newAuthor
 	return nil
 }
 
@@ -88,26 +88,26 @@ func (b *Book) ChangeDescription(newDescription string) error {
 		return errors.ErrStringIsEmpty("description")
 	}
 
-	b.description = newDescription
+	b.Description = newDescription
 	return nil
 }
 
 func (b *Book) Borrow() error {
-	if !b.available && !b.expiredBorrowDate.Before(time.Now()) {
+	if !b.Available && !b.ExpiredBorrowDate.Before(time.Now()) {
 		return errors.ErrBookIsNotAvailable()
 	}
 
-	b.available = false
-	b.expiredBorrowDate = time.Now().AddDate(0, 0, 7)
+	b.Available = false
+	b.ExpiredBorrowDate = time.Now().AddDate(0, 0, 7)
 	return nil
 }
 
 func (b *Book) Return() error {
-	if b.available {
+	if b.Available {
 		return errors.ErrBookAlreadyInLibrary()
 	}
 
-	b.available = true
-	b.expiredBorrowDate = time.Now()
+	b.Available = true
+	b.ExpiredBorrowDate = time.Now()
 	return nil
 }
