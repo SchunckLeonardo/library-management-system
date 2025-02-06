@@ -12,21 +12,7 @@ type Book struct {
 	Author            string
 	Description       string
 	Available         bool
-	ExpiredBorrowDate time.Time
-}
-
-type BookInterface interface {
-	Borrow() error
-	Return() error
-	GetID() value_objects.ID
-	GetTitle() string
-	GetAuthor() string
-	GetDescription() string
-	GetExpiredBorrowDate() time.Time
-	IsAvailable() bool
-	ChangeTitle(newTitle string) error
-	ChangeAuthor(newAuthor string) error
-	ChangeDescription(newDescription string) error
+	ExpiredBorrowDate int64
 }
 
 func NewBook(title, author, description string) *Book {
@@ -37,7 +23,7 @@ func NewBook(title, author, description string) *Book {
 		Author:            author,
 		Description:       description,
 		Available:         true,
-		ExpiredBorrowDate: time.Now(),
+		ExpiredBorrowDate: time.Now().UnixMilli(),
 	}
 }
 
@@ -57,7 +43,7 @@ func (b *Book) GetDescription() string {
 	return b.Description
 }
 
-func (b *Book) GetExpiredBorrowDate() time.Time {
+func (b *Book) GetExpiredBorrowDate() int64 {
 	return b.ExpiredBorrowDate
 }
 
@@ -93,12 +79,12 @@ func (b *Book) ChangeDescription(newDescription string) error {
 }
 
 func (b *Book) Borrow() error {
-	if !b.Available && !b.ExpiredBorrowDate.Before(time.Now()) {
+	if !b.Available && !time.UnixMilli(b.ExpiredBorrowDate).Before(time.Now()) {
 		return errors.ErrBookIsNotAvailable()
 	}
 
 	b.Available = false
-	b.ExpiredBorrowDate = time.Now().AddDate(0, 0, 7)
+	b.ExpiredBorrowDate = time.Now().AddDate(0, 0, 7).UnixMilli()
 	return nil
 }
 
@@ -108,6 +94,6 @@ func (b *Book) Return() error {
 	}
 
 	b.Available = true
-	b.ExpiredBorrowDate = time.Now()
+	b.ExpiredBorrowDate = time.Now().UnixMilli()
 	return nil
 }

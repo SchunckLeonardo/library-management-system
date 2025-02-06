@@ -136,7 +136,7 @@ func (p *Patron) BorrowBook(book *Book) error {
 func (p *Patron) ReturnBook(book *Book) error {
 	for i, b := range p.books {
 		if b.GetID() == book.GetID() {
-			if time.Now().After(b.GetExpiredBorrowDate()) {
+			if time.Now().After(time.UnixMilli(b.GetExpiredBorrowDate())) {
 				err := p.IncreaseViolations()
 				if err != nil {
 					return err

@@ -87,7 +87,7 @@ func TestBook_Borrow(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.False(t, book.IsAvailable())
-	assert.Equal(t, book.GetExpiredBorrowDate().Day(), time.Now().AddDate(0, 0, 7).Day())
+	assert.Equal(t, time.UnixMilli(book.GetExpiredBorrowDate()).Day(), time.Now().AddDate(0, 0, 7).Day())
 
 	err = book.Borrow()
 	assert.NotNil(t, err)
